@@ -1,0 +1,57 @@
+{
+  "organization": "ADVBUSSOL",
+  "project": "ABS-Central",
+  "generated": "2026-10-01T08:11:43Z",
+  "updated": "",
+  "customers": [
+    {
+      "id": "ABSDev",
+      "displayName": "ABS Dev Server"
+    },
+    {
+      "id": "Ayla",
+      "displayName": "Ayla"
+    },
+    {
+      "id": "Injaz",
+      "displayName": "Injaz"
+    }
+  ],
+  "projects": [
+    {
+      "id": "approval-portal-frontend",
+      "displayName": "Approval Portal - Frontend",
+      "newest": null
+    },
+    {
+      "id": "approval-portal-backend",
+      "displayName": "Approval Portal - Backend",
+      "newest": null
+    },
+    {
+      "id": "sukkar-frontend",
+      "displayName": "Sukkar - Frontend",
+      "newest": null
+    }
+  ],
+  "grid": {
+    "approval-portal-frontend": {
+      "ABSDev": {
+        "version": null
+      }
+    },
+    "approval-portal-backend": {
+      "ABSDev": {
+        "version": null
+      }
+    },
+    "sukkar-frontend": {
+      "Ayla": {
+        "version": null
+      },
+      "Injaz": {
+        "version": null
+      }
+    }
+  }
+}
