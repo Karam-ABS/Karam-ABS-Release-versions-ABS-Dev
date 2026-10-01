@@ -290,7 +290,7 @@ footer{margin-top:26px;color:var(--faint);font-size:12px;display:flex;flex-wrap:
 const BAKED = {
   "organization": "ADVBUSSOL",
   "project": "ABS-Central",
-  "generated": "2026-10-01T08:11:43Z",
+  "generated": "2026-10-01T09:19:17Z",
   "updated": "",
   "customers": [
     {
@@ -672,12 +672,34 @@ function setStatus(text, live){
   $$('status').classList.toggle('stale', !live);
 }
 
+// data.json sits next to this page and is refreshed by the release pipeline
+// after every deployment. Viewers without a token read that, so the page is
+// current for them too -- it just lags by however long the pipeline takes,
+// rather than being frozen at whenever the HTML was generated.
+//
+// Cache-busted: GitHub Pages serves with a long max-age, so without this a
+// browser would happily show yesterday's copy all day.
+async function fetchSnapshot(){
+  const r = await fetch('data.json?t=' + Date.now(), { cache: 'no-store' });
+  if (!r.ok) throw new Error('snapshot ' + r.status);
+  return await r.json();
+}
+
 async function refresh(interactivePat){
   const pat = interactivePat || readPat();
 
   if (!pat) {
-    render(BAKED); previous = BAKED;
-    setStatus('Published snapshot \u00b7 click to connect', false);
+    try {
+      const snap = await fetchSnapshot();
+      diff(snap); render(snap); previous = snap;
+      const when = snap.generated ? new Date(snap.generated).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
+      setStatus('Published snapshot' + (when ? ' \u00b7 ' + when : '') + ' \u00b7 click to connect', false);
+    } catch (e) {
+      // No data.json beside the page (opened straight from disk, say). The
+      // copy baked into this file is still better than a blank grid.
+      if (previous === null) { render(BAKED); previous = BAKED; }
+      setStatus('Published snapshot \u00b7 click to connect', false);
+    }
     return;
   }
 
@@ -719,7 +741,9 @@ previous = BAKED;
 requestAnimationFrame(() => moveInk(buttons[0]));
 if (readPat()) { refresh(); }
 else { setStatus('Published snapshot \u00b7 click to connect', false); openModal(); }
-setInterval(() => { if (readPat()) refresh(); }, 60000);
+// Always tick. With a token this re-reads Azure DevOps; without one it
+// re-reads data.json. Either way an open page follows a deployment on its own.
+setInterval(refresh, 60000);
 </script>
 </body>
 </html>
